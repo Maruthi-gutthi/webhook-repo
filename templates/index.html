@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Activity Feed</title>
+</head>
+<body>
+    <h2>GitHub Activity Feed (Updates every 15s)</h2>
+    <ul id="feed"></ul>
+
+    <script>
+        function fetchFeed() {
+            fetch('/feed')
+                .then(res => res.json())
+                .then(data => {
+                    const ul = document.getElementById('feed');
+                    ul.innerHTML = '';
+                    data.forEach(item => {
+                        let msg = '';
+                        if (item.type === 'push') {
+                            msg = `${item.author} pushed to ${item.to_branch} on ${item.timestamp}`;
+                        } else if (item.type === 'pull_request') {
+                            msg = `${item.author} submitted a pull request from ${item.from_branch} to ${item.to_branch} on ${item.timestamp}`;
+                        } else if (item.type === 'merge') {
+                            msg = `${item.author} merged branch ${item.from_branch} to ${item.to_branch} on ${item.timestamp}`;
+                        }
+                        const li = document.createElement('li');
+                        li.textContent = msg;
+                        ul.appendChild(li);
+                    });
+                });
+        }
+
+        fetchFeed();
+        setInterval(fetchFeed, 15000);
+    </script>
+</body>
+</html>
