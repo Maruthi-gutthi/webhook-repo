@@ -5,7 +5,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # MongoDB connection
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient("mongodb+srv://maruthi:maruthi@githubrepo.wy5fxew.mongodb.net/?retryWrites=true&w=majority&appName=Githubrepo")
 db = client['github_events']
 collection = db['events']
 
@@ -22,8 +22,14 @@ def feed():
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    payload = request.json
+    if not request.is_json:
+        return jsonify({'error': 'Invalid content type'}), 403
+
+    payload = request.get_json()
     event_type = request.headers.get('X-GitHub-Event')
+    print("Webhook received")
+    print("Event type:", event_type)
+    print("Payload:", payload)
     data = {}
 
     if event_type == 'push':
